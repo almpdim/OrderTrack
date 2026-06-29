@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrderTrack - Εγγραφή Χρήστη</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .signup-container {
+            max-width: 450px;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container signup-container">
+    <div class="card shadow-sm border-0 px-4 py-4">
+        <div class="card-body">
+            <h3 class="text-center fw-bold text-primary mb-2">OrderTrack Pro</h3>
+            <p class="text-muted text-center mb-4">Δημιουργήστε έναν νέο λογαριασμό πελάτη</p>
+            
+            <form action="#" method="GET">
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold">Όνομα Χρήστη</label>
+                    <input type="text" class="form-control" id="username" placeholder="π.χ. niko_papadopoulos" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold">Ηλεκτρονική Διεύθυνση (Email)</label>
+                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label fw-semibold">Κωδικός Πρόσβασης</label>
+                    <input type="password" class="form-control" id="password" placeholder="Τουλάχιστον 8 χαρακτήρες" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password_confirm" class="form-label fw-semibold">Επιβεβαίωση Κωδικού</label>
+                    <input type="password" class="form-control" id="password_confirm" placeholder="Επανεισάγετε τον κωδικό" required>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
+                    <label class="form-check-label text-muted small" for="termsCheck">
+                        Συμφωνώ με τους Όρους Χρήσης και την Πολιτική Απορρήτου.
+                    </label>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary fw-bold py-2">Δημιουργία Λογαριασμού</button>
+                </div>
+            </form>
+
+            <hr class="my-4 text-muted">
+
+            <div class="text-center">
+                <span class="text-muted small">Έχετε ήδη λογαριασμό; </span>
+                <a href="login.html" class="text-primary small fw-semibold text-decoration-none">Συνδεθείτε εδώ</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
