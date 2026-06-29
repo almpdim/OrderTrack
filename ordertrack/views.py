@@ -66,3 +66,27 @@ def order_detail_view(request, order_id):
         'order': order
     }
     return render(request, 'order_detail.html', context)
+
+def login_view(request):
+    return render(request, 'login.html')
+
+def signup_view(request):
+    return render(request, 'signup.html')
+
+def profile_view(request):
+    return render(request, 'profile.html') 
+
+def order_form_view(request):
+    return render(request, 'order_form.html')
+
+def order_cancel_view(request):
+    return render(request, 'order_cancel.html')
+
+def order_status_update_view(request):
+    return render(request, 'order_status_update.html')
+
+def order_list_filtered_view(request):
+    return render(request, 'order_list_filtered.html')
+
+def order_list_sorted_view(request):
+    return render(request, 'order_list_sorted.html')
