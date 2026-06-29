@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import authenticate, login 
 from .models import Order
 
 def order_list_view(request):
@@ -18,7 +19,7 @@ def order_list_view(request):
             orders = orders.filter(status=django_status)
             
     # 3. Διαχείριση Ταξινόμησης (Λειτουργία 11)
-    sort_by = request.GET.get('sort', 'desc') # Αν δεν επιλεγεί κάτι, προεπιλογή είναι η φθίνουσα (desc)
+    sort_by = request.GET.get('sort', 'desc') # Αν δεν επιλεγεί κάτι, προεπιλογή είναι η φθίνουσα 
     if sort_by == 'asc':
         orders = orders.order_by('created_at')  # Από την παλαιότερη στην πιο πρόσφατη
     else:
@@ -68,6 +69,20 @@ def order_detail_view(request, order_id):
     return render(request, 'order_detail.html', context)
 
 def login_view(request):
+    if request.method == 'POST':
+        username_input = request.POST.get('username')
+        password_input = request.POST.get('password')
+        
+        # Έλεγχος αν ο χρήστης υπάρχει στη βάση και αν ο κωδικός είναι σωστός
+        user = authenticate(request, username=username_input, password=password_input)
+        
+        if user is not None:
+            login(request, user) # Σύνδεση του χρήστη
+            return redirect('order_list') # Ανακατεύθυνση στη λίστα παραγγελιών
+        else:
+            # Αν τα στοιχεία είναι λάθος, επιστρέφει μήνυμα σφάλματος
+            return render(request, 'login.html', {'error_message': 'Λάθος όνομα χρήστη ή κωδικός πρόσβασης.'})
+            
     return render(request, 'login.html')
 
 def signup_view(request):
