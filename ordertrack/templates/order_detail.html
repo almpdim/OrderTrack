@@ -31,10 +31,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="order_list.html"><i class="bi bi-box-seam"></i> Οι Παραγγελίες μου</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="profile.html"><i class="bi bi-person"></i> Προφίλ</a>
+                    <a class="nav-link" href="{% url 'order_list' %}"><i class="bi bi-box-seam"></i> Οι Παραγγελίες μου</a>
                 </li>
             </ul>
         </div>
@@ -44,10 +41,10 @@
 <div class="container mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-secondary mb-0">Παραγγελία #TRK-8492</h2>
-            <p class="text-muted mb-0">Ημερομηνία Καταχώρησης: 15 Μαΐου 2026</p>
+            <h2 class="fw-bold text-secondary mb-0">Παραγγελία #{{ order.tracking_id }}</h2>
+            <p class="text-muted mb-0">Ημερομηνία Καταχώρησης: {{ order.created_at|date:"d Μαΐου Y" }}</p>
         </div>
-        <a href="order_list.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Επιστροφή στη Λίστα</a>
+        <a href="{% url 'order_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Επιστροφή στη Λίστα</a>
     </div>
 
     <div class="card border-0 shadow-sm mb-4">
@@ -59,20 +56,29 @@
                     <p class="small fw-bold mb-0">Καταχωρήθηκε</p>
                 </div>
                 <div class="col-3">
-                    <div class="step-icon bg-primary text-white mb-2"><i class="bi bi-gear-fill"></i></div>
+                    <div class="step-icon {% if order.status != 'Pending' %}bg-primary text-white{% else %}bg-light text-muted{% endif %} mb-2">
+                        <i class="bi bi-gear-fill"></i>
+                    </div>
                     <p class="small fw-bold mb-0">Σε επεξεργασία</p>
                 </div>
                 <div class="col-3">
-                    <div class="step-icon bg-light text-muted mb-2"><i class="bi bi-truck"></i></div>
+                    <div class="step-icon {% if order.status == 'Shipped' or order.status == 'Delivered' %}bg-primary text-white{% else %}bg-light text-muted{% endif %} mb-2">
+                        <i class="bi bi-truck"></i>
+                    </div>
                     <p class="small text-muted mb-0">Απεστάλη</p>
                 </div>
                 <div class="col-3">
-                    <div class="step-icon bg-light text-muted mb-2"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="step-icon {% if order.status == 'Delivered' %}bg-success text-white{% else %}bg-light text-muted{% endif %} mb-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
                     <p class="small text-muted mb-0">Παραδόθηκε</p>
                 </div>
             </div>
+            
             <div class="progress mt-3" style="height: 8px;">
-                <div class="progress-bar bg-primary" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar bg-primary" role="progressbar" 
+                     style="width: {% if order.status == 'Pending' %}25%{% elif order.status == 'Processing' %}50%{% elif order.status == 'Shipped' %}75%{% elif order.status == 'Delivered' %}100%{% else %}0%{% endif %};">
+                </div>
             </div>
         </div>
     </div>
@@ -83,36 +89,16 @@
                 <div class="card-header bg-white py-3 border-0">
                     <h5 class="fw-bold mb-0">Περιεχόμενα Παραγγελίας</h5>
                 </div>
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4">Προϊόν</th>
-                                <th>Τιμή Μονάδας</th>
-                                <th>Ποσότητα</th>
-                                <th class="text-end pe-4">Σύνολο</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="ps-4 fw-semibold">Ασύρματα Ακουστικά Bluetooth</td>
-                                <td>29.90 €</td>
-                                <td>1</td>
-                                <td class="text-end pe-4 fw-bold">29.90 €</td>
-                            </tr>
-                            <tr>
-                                <td class="ps-4 fw-semibold">Καλώδιο Φόρτισης USB-C (2m)</td>
-                                <td>8.00 €</td>
-                                <td>2</td>
-                                <td class="text-end pe-4 fw-bold">16.00 €</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card-body">
+                    <p class="fw-semibold">Περιγραφή / Σημειώσεις:</p>
+                    <div class="p-3 bg-light rounded border">
+                        {{ order.description|default:"Δεν υπάρχει διαθέσιμη περιγραφή για αυτή την παραγγελία." }}
+                    </div>
                 </div>
                 <div class="card-footer bg-light p-4 border-0 text-end">
-                    <p class="mb-1 text-muted">Μερικό Σύνολο: 45.90 €</p>
-                    <p class="mb-1 text-muted">Έξοδα Αποστολής: 0.00 €</p>
-                    <h4 class="fw-bold text-primary mb-0">Τελικό Σύνολο: 45.90 €</h4>
+                    <h4 class="fw-bold text-primary mb-0">Τρέχουσα Κατάσταση: 
+                        <span class="badge bg-secondary">{{ order.get_status_display|default:order.status }}</span>
+                    </h4>
                 </div>
             </div>
         </div>
@@ -121,10 +107,8 @@
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">Διεύθυνση Παράδοσης</h5>
-                    <p class="fw-semibold mb-1">Νίκος Παπαδόπουλος</p>
-                    <p class="text-muted mb-1">Πανεπιστημίου 25, Αθήνα</p>
-                    <p class="text-muted mb-1">Τ.Κ. 10672</p>
-                    <p class="text-muted mb-0">Τηλ: 6971234567</p>
+                    <p class="fw-semibold mb-1">Στοιχεία Διασύνδεσης</p>
+                    <p class="text-muted mb-1">Η παραγγελία ανήκει στο ID χρήστη: {{ order.customer.id|default:"Επισκέπτης" }}</p>
                 </div>
             </div>
 
@@ -133,14 +117,10 @@
                     <small class="fw-bold"><i class="bi bi-shield-lock"></i> Πάνελ Διαχειριστή</small>
                 </div>
                 <div class="card-body">
-                    <label for="updateStatusSelect" class="form-label small fw-semibold">Αλλαγή Κατάστασης Παραγγελίας</label>
-                    <select class="form-select form-select-sm mb-3" id="updateStatusSelect">
-                        <option value="pending">Σε επεξεργασία</option>
-                        <option value="shipped">Απεστάλη</option>
-                        <option value="delivered">Παραδόθηκε</option>
-                        <option value="cancelled">Ακυρώθηκε</option>
-                    </select>
-                    <button class="btn btn-primary btn-sm w-100 fw-bold">Ενημέρωση Κατάστασης</button>
+                    <p class="small text-muted">Η διαχείριση της κατάστασης γίνεται προς το παρόν μέσω του Django Admin ή της custom φόρμας που θα φτιάξουμε στη συνέχεια.</p>
+                    <a href="/admin/ordertrack/order/{{ order.id }}/change/" class="btn btn-primary btn-sm w-100 fw-bold" target="_blank">
+                        Άνοιγμα στο Django Admin
+                    </a>
                 </div>
             </div>
         </div>

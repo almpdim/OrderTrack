@@ -21,5 +21,6 @@ from ordertrack import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('orders/', views.order_list_view, name='order_list'),
-    path('track/', views.track_order_view, name='track_order'), 
+    path('track/', views.track_order_view, name='track_order'),
+    path('orders/<int:order_id>/', views.order_detail_view, name='order_detail'), 
 ]

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Order
 
 def order_list_view(request):
@@ -56,3 +56,13 @@ def track_order_view(request):
         'error_message': error_message
     }
     return render(request, 'track.html', context)
+
+
+def order_detail_view(request, order_id):
+    # Αν δεν βρει την παραγγελία με αυτό το ID, θα βγάλει αυτόματα σελίδα 404 (Not Found)
+    order = get_object_or_404(Order, id=order_id)
+    
+    context = {
+        'order': order
+    }
+    return render(request, 'order_detail.html', context)
