@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login 
 from .models import Order
+from django.contrib.auth.models import User
 
 def order_list_view(request):
     # 1. Αρχική ανάκτηση όλων των παραγγελιών
@@ -86,6 +87,26 @@ def login_view(request):
     return render(request, 'login.html')
 
 def signup_view(request):
+    if request.method == 'POST':
+        username_input = request.POST.get('username')
+        email_input = request.POST.get('email')
+        password_input = request.POST.get('password')
+        password_confirm_input = request.POST.get('password_confirm')
+
+        # 1. Έλεγχος αν οι κωδικοί ταιριάζουν
+        if password_input != password_confirm_input:
+            return render(request, 'signup.html', {'error_message': 'Οι κωδικοί πρόσβασης δεν ταιριάζουν.'})
+
+        # 2. Έλεγχος αν το username υπάρχει ήδη
+        if User.objects.filter(username=username_input).exists():
+            return render(request, 'signup.html', {'error_message': 'Το όνομα χρήστη χρησιμοποιείται ήδη.'})
+
+        # 3. Δημιουργία του χρήστη και αυτόματη σύνδεση
+        user = User.objects.create_user(username=username_input, email=email_input, password=password_input)
+        login(request, user)
+
+        return redirect('order_list') # Ανακατεύθυνση στο ιστορικό παραγγελιών
+
     return render(request, 'signup.html')
 
 def profile_view(request):
