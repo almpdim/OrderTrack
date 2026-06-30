@@ -34,7 +34,12 @@ class Order(models.Model):
     
     # Σχέση ForeignKey: Ένας χρήστης μπορεί να έχει πολλές παραγγελίες
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-
+   
+    @property
+    def total_order_price(self):
+        # Παίρνει όλα τα items της παραγγελίας και αθροίζει το total_item_price τους
+        return sum(item.total_item_price for item in self.items.all())
+   
     def __str__(self):
         return f"Order {self.id} - {self.tracking_id} ({self.status})"
 
@@ -42,10 +47,13 @@ class OrderItem(models.Model):
     id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=255, blank=False)
     quantity = models.IntegerField(default=1)
-    price = models.FloatField()  # Τιμή τη στιγμή της αγοράς
-    
-    # Σύνδεση με την παραγγελία
+    price = models.FloatField()
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+
+    # Υπολογισμός συνόλου προϊόντος
+    @property
+    def total_item_price(self):
+        return self.quantity * self.price
 
     def __str__(self):
         return f"{self.product_name} x {self.quantity}"

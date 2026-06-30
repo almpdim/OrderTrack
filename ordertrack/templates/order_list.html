@@ -43,7 +43,7 @@
             <h2 class="fw-bold text-secondary mb-0">Ιστορικό Παραγγελιών</h2>
             <p class="text-muted mb-0">Διαχειριστείτε και δείτε την πορεία των αποστολών σας</p>
         </div>
-        <a href="#" class="btn btn-primary fw-bold shadow-sm"><i class="bi bi-plus-circle"></i> Νέα Παραγγελία</a>
+        <a href="{% url 'order_form' %}" class="btn btn-primary fw-bold shadow-sm"><i class="bi bi-plus-circle"></i> Νέα Παραγγελία</a>
     </div>
 
     <div class="card shadow-sm p-3 mb-4 bg-white">
@@ -86,7 +86,7 @@
                 <tbody>
                     {% for order in orders %}
                     <tr>
-                        <td class="ps-4 fw-bold text-primary">#{{ order.tracking_id }}</td>
+                        <td class="ps-4 fw-bold text-primary">#{{ order.tracking_id|slice:":8" }}</td>
                         <td>{{ order.created_at|date:"d Μάιου Y" }}</td>
                         <td>
                             {% for item in order.items.all %}
@@ -97,9 +97,11 @@
                                 <small class="text-muted italic">Δεν καταχωρήθηκαν προϊόντα</small>
                             {% endfor %}
                         </td>
-                        <td class="fw-bold">
-                            45.90 €
+                        
+                        <td>
+                            <strong>{{ order.total_order_price }} €</strong>
                         </td>
+                        
                         <td>
                             {% if order.status == 'Processing' %}
                                 <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-gear-fill me-1"></i> Σε επεξεργασία</span>

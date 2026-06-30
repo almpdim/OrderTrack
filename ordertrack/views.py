@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.models import User
 from .models import Order
+from .forms import OrderItemForm
 
 @login_required(login_url='login') # Αν κάποιος δεν είναι συνδεδεμένος, τον πετάει στο Login
 def order_list_view(request):
@@ -104,8 +105,28 @@ def signup_view(request):
 def profile_view(request):
     return render(request, 'profile.html') 
 
+@login_required(login_url='login')
 def order_form_view(request):
-    return render(request, 'order_form.html')
+    if request.method == 'POST':
+        form = OrderItemForm(request.POST) # Δεσμευμένη φόρμα με τα δεδομένα του χρήστη
+        if form.is_valid(): # Αυτόματος έλεγχος επικύρωσης του Django 
+            # 1. Δημιουργούμε πρώτα την κενή παραγγελία και τη συνδέουμε με τον τρέχοντα χρήστη
+            new_order = Order.objects.create(user=request.user)
+            
+            # 2. Παίρνουμε το αντικείμενο του προϊόντος χωρίς να το σώσουμε ακόμα στη βάση
+            item = form.save(commit=False)
+            
+            # 3. Συνδέουμε το προϊόν με την παραγγελία που μόλις φτιάξαμε
+            item.order = new_order
+            
+            # 4. Σώζουμε οριστικά στη βάση δεδομένων 
+            item.save()
+            
+            return redirect('order_list') # Επιστροφή στο ιστορικό παραγγελιών
+    else:
+        form = OrderItemForm() # Κενή φόρμα για την αρχική εμφάνιση
+        
+    return render(request, 'order_form.html', {'form': form}) 
 
 def order_cancel_view(request):
     return render(request, 'order_cancel.html')
