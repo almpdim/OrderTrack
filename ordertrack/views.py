@@ -1,23 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import authenticate, login 
-from .models import Order
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.models import User
+from .models import Order
 
+@login_required(login_url='login') # Αν κάποιος δεν είναι συνδεδεμένος, τον πετάει στο Login
 def order_list_view(request):
-    # 1. Αρχική ανάκτηση όλων των παραγγελιών
-    orders = Order.objects.prefetch_related('items').all()
+    # Παίρνουμε ΜΟΝΟ τις παραγγελίες που ανήκουν στον συγκεκριμένο συνδεδεμένο χρήστη
+    orders = Order.objects.filter(user=request.user) 
     
-    # 2. Διαχείριση Φιλτραρίσματος (Λειτουργία 10)
-    status_filter = request.GET.get('status', 'all')
-    if status_filter != 'all':
-        status_mapping = {
-            'pending': 'Processing',
-            'shipped': 'Shipped',
-            'delivered': 'Delivered',
-        }
-        django_status = status_mapping.get(status_filter)
-        if django_status:
-            orders = orders.filter(status=django_status)
+    return render(request, 'order_list.html', {'orders': orders})
             
     # 3. Διαχείριση Ταξινόμησης (Λειτουργία 11)
     sort_by = request.GET.get('sort', 'desc') # Αν δεν επιλεγεί κάτι, προεπιλογή είναι η φθίνουσα 
