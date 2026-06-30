@@ -27,7 +27,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
     <div class="container">
-        <a class="navbar-brand" href="#">OrderTrack Pro</a>
+        <a class="navbar-brand" href="#">OrderTrack</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
@@ -41,8 +41,8 @@
 <div class="container mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-secondary mb-0">Παραγγελία #{{ order.tracking_id }}</h2>
-            <p class="text-muted mb-0">Ημερομηνία Καταχώρησης: {{ order.created_at|date:"d Μαΐου Y" }}</p>
+            <h2 class="fw-bold text-secondary mb-0">Παραγγελία #{{ order.tracking_id|slice:":8" }}</h2>
+            <p class="text-muted mb-0">Ημερομηνία Καταχώρησης: {{ order.created_at|date:"d Μαΐου Y, H:i" }}</p>
         </div>
         <a href="{% url 'order_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Επιστροφή στη Λίστα</a>
     </div>
@@ -56,7 +56,7 @@
                     <p class="small fw-bold mb-0">Καταχωρήθηκε</p>
                 </div>
                 <div class="col-3">
-                    <div class="step-icon {% if order.status != 'Pending' %}bg-primary text-white{% else %}bg-light text-muted{% endif %} mb-2">
+                    <div class="step-icon {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}bg-primary text-white{% else %}bg-light text-muted{% endif %} mb-2">
                         <i class="bi bi-gear-fill"></i>
                     </div>
                     <p class="small fw-bold mb-0">Σε επεξεργασία</p>
@@ -65,19 +65,19 @@
                     <div class="step-icon {% if order.status == 'Shipped' or order.status == 'Delivered' %}bg-primary text-white{% else %}bg-light text-muted{% endif %} mb-2">
                         <i class="bi bi-truck"></i>
                     </div>
-                    <p class="small text-muted mb-0">Απεστάλη</p>
+                    <p class="small fw-bold mb-0">Απεστάλη</p>
                 </div>
                 <div class="col-3">
                     <div class="step-icon {% if order.status == 'Delivered' %}bg-success text-white{% else %}bg-light text-muted{% endif %} mb-2">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <p class="small text-muted mb-0">Παραδόθηκε</p>
+                    <p class="small fw-bold mb-0">Παραδόθηκε</p>
                 </div>
             </div>
             
             <div class="progress mt-3" style="height: 8px;">
                 <div class="progress-bar bg-primary" role="progressbar" 
-                     style="width: {% if order.status == 'Pending' %}25%{% elif order.status == 'Processing' %}50%{% elif order.status == 'Shipped' %}75%{% elif order.status == 'Delivered' %}100%{% else %}0%{% endif %};">
+                     style="width: {% if order.status == 'Processing' %}50%{% elif order.status == 'Shipped' %}75%{% elif order.status == 'Delivered' %}100%{% else %}25%{% endif %};">
                 </div>
             </div>
         </div>
@@ -89,16 +89,24 @@
                 <div class="card-header bg-white py-3 border-0">
                     <h5 class="fw-bold mb-0">Περιεχόμενα Παραγγελίας</h5>
                 </div>
-                <div class="card-body">
-                    <p class="fw-semibold">Περιγραφή / Σημειώσεις:</p>
-                    <div class="p-3 bg-light rounded border">
-                        {{ order.description|default:"Δεν υπάρχει διαθέσιμη περιγραφή για αυτή την παραγγελία." }}
-                    </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for item in order.items.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-secondary">{{ item.product_name }}</h6>
+                                    <small class="text-muted">Ποσότητα: {{ item.quantity }} × {{ item.price }} €</small>
+                                </div>
+                                <span class="fw-bold text-dark">{{ item.total_item_price }} €</span>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted text-center py-3">Δεν βρέθηκαν προϊόντα σε αυτή την παραγγελία.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
-                <div class="card-footer bg-light p-4 border-0 text-end">
-                    <h4 class="fw-bold text-primary mb-0">Τρέχουσα Κατάσταση: 
-                        <span class="badge bg-secondary">{{ order.get_status_display|default:order.status }}</span>
-                    </h4>
+                <div class="card-footer bg-light p-4 border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-secondary mb-0">Συνολικό Κόστος:</h5>
+                    <h3 class="fw-bold text-primary mb-0">{{ order.total_order_price }} €</h3>
                 </div>
             </div>
         </div>
@@ -106,9 +114,10 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="fw-bold mb-3">Διεύθυνση Παράδοσης</h5>
-                    <p class="fw-semibold mb-1">Στοιχεία Διασύνδεσης</p>
-                    <p class="text-muted mb-1">Η παραγγελία ανήκει στο ID χρήστη: {{ order.customer.id|default:"Επισκέπτης" }}</p>
+                    <h5 class="fw-bold mb-3">Στοιχεία Λογαριασμού</h5>
+                    <p class="fw-semibold mb-1">Πληροφορίες Πελάτη</p>
+                    <p class="text-muted small mb-1">Όνομα χρήστη: <strong>{{ order.user.username }}</strong></p>
+                    <p class="text-muted small mb-1">Email: {{ order.user.email|default:"-" }}</p>
                 </div>
             </div>
 
@@ -117,7 +126,7 @@
                     <small class="fw-bold"><i class="bi bi-shield-lock"></i> Πάνελ Διαχειριστή</small>
                 </div>
                 <div class="card-body">
-                    <p class="small text-muted">Η διαχείριση της κατάστασης γίνεται προς το παρόν μέσω του Django Admin ή της custom φόρμας που θα φτιάξουμε στη συνέχεια.</p>
+                    <p class="small text-muted">Η διαχείριση της κατάστασης γίνεται προς το παρόν μέσω του Django Admin.</p>
                     <a href="/admin/ordertrack/order/{{ order.id }}/change/" class="btn btn-primary btn-sm w-100 fw-bold" target="_blank">
                         Άνοιγμα στο Django Admin
                     </a>

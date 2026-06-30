@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Order
 from .forms import OrderItemForm
+from django.core.exceptions import PermissionDenied
 
 @login_required(login_url='login') # Αν κάποιος δεν είναι συνδεδεμένος, τον πετάει στο Login
 def order_list_view(request):
@@ -53,14 +54,16 @@ def track_order_view(request):
     return render(request, 'track.html', context)
 
 
+@login_required(login_url='login')
 def order_detail_view(request, order_id):
-    # Αν δεν βρει την παραγγελία με αυτό το ID, θα βγάλει αυτόματα σελίδα 404 (Not Found)
+    # Αναζήτηση της παραγγελίας βάσει ID, αλλιώς 404 σφάλμα
     order = get_object_or_404(Order, id=order_id)
     
-    context = {
-        'order': order
-    }
-    return render(request, 'order_detail.html', context)
+    # ΕΞΟΥΣΙΟΔΟΤΗΣΗ (Authorization): Έλεγχος αν η παραγγελία ανήκει στον χρήστη
+    if order.user != request.user:
+        raise PermissionDenied # Πετάει αυτόματα 403 Forbidden
+        
+    return render(request, 'order_detail.html', {'order': order})
 
 def login_view(request):
     if request.method == 'POST':

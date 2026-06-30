@@ -114,8 +114,7 @@
                             {% endif %}
                         </td>
                         <td class="text-center pe-4">
-                            <a href="#" class="btn btn-light btn-sm fw-semibold text-primary border"><i class="bi bi-eye"></i> Προβολή</a>
-                        </td>
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-light btn-sm fw-semibold text-primary border"><i class="bi bi-eye"></i> Προβολή</a>
                     </tr>
                     {% empty %}
                     <tr>
