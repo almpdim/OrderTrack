@@ -156,3 +156,10 @@ def order_list_filtered_view(request):
 
 def order_list_sorted_view(request):
     return render(request, 'order_list_sorted.html')
+
+def home_view(request):
+    # Έλεγχος αν ο χρήστης έχει κάνει ήδη login
+    if request.user.is_authenticated:
+        return redirect('order_list') # Ανακατεύθυνση στις παραγγελίες του
+    else:
+        return redirect('login') # Ανακατεύθυνση στο login αν είναι επισκέπτης
