@@ -26,13 +26,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="order_list.html"><i class="bi bi-box-seam"></i> Οι Παραγγελίες μου</a>
+                    <a class="nav-link" href="{% url 'order_list' %}"><i class="bi bi-box-seam"></i> Οι Παραγγελίες μου</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="profile.html"><i class="bi bi-person"></i> Προφίλ</a>
+                    <a class="nav-link active" href="{% url 'profile' %}"><i class="bi bi-person"></i> Προφίλ</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="login.html"><i class="bi bi-box-arrow-right"></i> Αποσύνδεση</a>
+                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <a href="{% url 'logout' %}" class="btn btn-danger btn-sm fw-bold w-100"><i class="bi bi-box-arrow-right"></i> Αποσύνδεση</a>
                 </li>
             </ul>
         </div>
@@ -49,10 +49,10 @@
                             <i class="bi bi-person-fill" style="font-size: 3.5rem;"></i>
                         </div>
                     </div>
-                    <h4 class="fw-bold mb-1">Νίκος Παπαδόπουλος</h4>
-                    <p class="text-muted small mb-3">@nikos_papadopoulos</p>
+                    <h4 class="fw-bold mb-1">{{ request.user.get_full_name|default:request.user.username }}</h4>
+                    <p class="text-muted small mb-3">@{{ request.user.username }}</p>
                     <div class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
-                        <i class="bi bi-calendar3"></i> Μέλος από: Μάιος 2026
+                        <i class="bi bi-calendar3"></i> Ημερομηνία Εγγραφής: {{ request.user.date_joined|date:"M Y" }}
                     </div>
                 </div>
             </div>
@@ -64,26 +64,27 @@
                     <h5 class="fw-bold mb-0"><i class="bi bi-gear"></i> Διαχείριση Στοιχείων Λογαριασμού</h5>
                 </div>
                 <div class="card-body px-4">
-                    <form action="#" method="GET">
+                    <form action="" method="POST">
+                        {% csrf_token %}
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label for="firstName" class="form-label fw-semibold small">Όνομα</label>
-                                <input type="text" class="form-control" id="firstName" value="Νίκος">
+                                <input type="text" class="form-control" id="firstName" name="first_name" value="{{ request.user.first_name }}" readonly disabled>
                             </div>
                             <div class="col-md-6">
                                 <label for="lastName" class="form-label fw-semibold small">Επώνυμο</label>
-                                <input type="text" class="form-control" id="lastName" value="Παπαδόπουλος">
+                                <input type="text" class="form-control" id="lastName" name="last_name" value="{{ request.user.last_name }}" readonly disabled>
                             </div>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-semibold small">Email (Δεν αλλάζει)</label>
-                                <input type="email" class="form-control bg-light" id="email" value="nikos@example.com" readonly>
+                                <input type="email" class="form-control bg-light" id="email" value="{{ request.user.email }}" readonly>
                             </div>
                             <div class="col-md-6">
                                 <label for="phone" class="form-label fw-semibold small">Κινητό Τηλέφωνο</label>
-                                <input type="tel" class="form-control" id="phone" value="6971234567">
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ profile.phone|default:"" }}" readonly disabled>
                             </div>
                         </div>
 
@@ -91,22 +92,18 @@
                         
                         <div class="mb-3">
                             <label for="address" class="form-label fw-semibold small">Διεύθυνση (Οδός, Αριθμός)</label>
-                            <input type="text" class="form-control" id="address" value="Πανεπιστημίου 25">
+                            <input type="text" class="form-control" id="address" name="shipping_address" value="{{ profile.shipping_address|default:"" }}" readonly disabled>
                         </div>
 
                         <div class="row g-3 mb-4">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <label for="city" class="form-label fw-semibold small">Πόλη / Περιοχή</label>
-                                <input type="text" class="form-control" id="city" value="Αθήνα">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="zipCode" class="form-label fw-semibold small">Ταχυδρομικός Κώδικας (Τ.Κ.)</label>
-                                <input type="text" class="form-control" id="zipCode" value="10672">
+                                <input type="text" class="form-control" id="city" name="city" value="{{ profile.city|default:"" }}" readonly disabled>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary fw-bold px-4">Αποθήκευση Αλλαγών</button>
+                        <div class="alert alert-info small py-2">
+                            <i class="bi bi-info-circle-fill me-1"></i> Η επεξεργασία των στοιχείων του προφίλ γίνεται προς το παρόν μέσω του συστήματος διαχείρισης (Django Admin).
                         </div>
                     </form>
                 </div>

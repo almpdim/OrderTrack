@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.models import User
 from .models import Order
 from .forms import OrderItemForm
 from django.core.exceptions import PermissionDenied
+from .models import UserProfile
+
 
 @login_required(login_url='login') # Αν κάποιος δεν είναι συνδεδεμένος, τον πετάει στο Login
 def order_list_view(request):
@@ -33,7 +35,7 @@ def track_order_view(request):
     order = None
     error_message = None
     
-    # Αν ο χρήστης πάτησε "Αναζήτηση" (Υποβολή της φόρμας)
+    # Αν ο χρήστης πάτησε "Αναζήτηση" 
     if request.method == 'GET' and 'tracking_id' in request.GET:
         tracking_id = request.GET.get('tracking_id').strip()
         
@@ -105,8 +107,20 @@ def signup_view(request):
 
     return render(request, 'signup.html')
 
+@login_required(login_url='login')
 def profile_view(request):
-    return render(request, 'profile.html') 
+    # Προσπαθούμε να βρούμε το προφίλ του χρήστη. 
+    # Αν δεν έχει δημιουργηθεί ακόμα, παίρνουμε None
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = None
+
+    return render(request, 'profile.html', {'profile': profile})
+
+def logout_view(request):
+    logout(request) # Καταστρέφει τη συνεδρία στον server 
+    return redirect('login') # Ανακατεύθυνση στη σελίδα σύνδεσης 
 
 @login_required(login_url='login')
 def order_form_view(request):

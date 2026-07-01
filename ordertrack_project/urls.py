@@ -31,4 +31,5 @@ urlpatterns = [
     path('orders/status-update/', views.order_status_update_view, name='order_status_update'),
     path('orders/filtered/', views.order_list_filtered_view, name='order_list_filtered'),
     path('orders/sorted/', views.order_list_sorted_view, name='order_list_sorted'),
+    path('logout/', views.logout_view, name='logout'),
 ]
