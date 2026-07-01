@@ -33,4 +33,5 @@ urlpatterns = [
     path('orders/sorted/', views.order_list_sorted_view, name='order_list_sorted'),
     path('logout/', views.logout_view, name='logout'),
     path('', views.home_view, name='home'),
+    path('track/', views.track_order_view, name='track_order'),
 ]

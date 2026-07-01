@@ -163,3 +163,25 @@ def home_view(request):
         return redirect('order_list') # Ανακατεύθυνση στις παραγγελίες του
     else:
         return redirect('login') # Ανακατεύθυνση στο login αν είναι επισκέπτης
+    
+def track_order_view(request):
+    order = None
+    error_message = None
+    tracking_id = ""
+
+    if request.method == "POST":
+        tracking_id = request.POST.get('tracking_id', '').strip()
+        if tracking_id:
+            try:
+                # Αναζήτηση παραγγελίας με βάση το tracking_id
+                order = Order.objects.get(tracking_id=tracking_id)
+            except Order.DoesNotExist:
+                error_message = "Δεν βρέθηκε παραγγελία με αυτόν τον κωδικό. Παρακαλώ ελέγξτε τον ξανά."
+        else:
+            error_message = "Παρακαλώ εισάγετε έναν έγκυρο κωδικό εντοπισμού."
+
+    return render(request, 'track.html', {
+        'order': order, 
+        'error_message': error_message,
+        'tracking_id': tracking_id
+    })
