@@ -11,17 +11,17 @@
         }
         .signup-container {
             max-width: 450px;
-            margin-top: 80px;
+            margin-top: 60px;
         }
     </style>
 </head>
 <body>
 
-<div class="container signup-container">
+<div class="container signup-container mb-5">
     <div class="card shadow-sm border-0 px-4 py-4">
         <div class="card-body">
             <h3 class="text-center fw-bold text-primary mb-2">OrderTrack</h3>
-            <p class="text-muted text-center mb-4">Δημιουργήστε έναν νέο λογαριασμό πελάτη</p>
+            <p class="text-muted text-center mb-4">Δημιουργία νέου λογαριασμού</p>
             
             <form action="{% url 'signup' %}" method="POST">
                 {% csrf_token %}
@@ -31,12 +31,23 @@
                 {% endif %}
 
                 <div class="mb-3">
-                    <label for="username" class="form-label fw-semibold">Όνομα Χρήστη</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="π.χ. niko_papadopoulos" required>
+                    <label for="username" class="form-label fw-semibold">Όνομα Χρήστη (Username)</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="π.χ. niko_pap" required>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label fw-semibold">Όνομα</label>
+                        <input type="text" class="form-control" id="firstName" name="first_name" placeholder="Νίκος" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label fw-semibold">Επώνυμο</label>
+                        <input type="text" class="form-control" id="lastName" name="last_name" placeholder="Παπαδόπουλος" required>
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label fw-semibold">Ηλεκτρονική Διεύθυνση (Email)</label>
+                    <label for="email" class="form-label fw-semibold">Email</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
                 </div>
 
@@ -45,20 +56,13 @@
                     <input type="password" class="form-control" id="password" name="password" placeholder="Τουλάχιστον 8 χαρακτήρες" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label for="password_confirm" class="form-label fw-semibold">Επιβεβαίωση Κωδικού</label>
                     <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Επανεισάγετε τον κωδικό" required>
                 </div>
 
-                <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
-                    <label class="form-check-label text-muted small" for="termsCheck">
-                        Συμφωνώ με τους Όρους Χρήσης και την Πολιτική Απορρήτου.
-                    </label>
-                </div>
-
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary fw-bold py-2">Δημιουργία Λογαριασμού</button>
+                    <button type="submit" class="btn btn-primary fw-bold py-2">Ολοκλήρωση Εγγραφής</button>
                 </div>
             </form>
 
@@ -66,7 +70,7 @@
 
             <div class="text-center">
                 <span class="text-muted small">Έχετε ήδη λογαριασμό; </span>
-                <a href="login.html" class="text-primary small fw-semibold text-decoration-none">Συνδεθείτε εδώ</a>
+                <a href="{% url 'login' %}" class="text-primary small fw-semibold text-decoration-none">Συνδεθείτε εδώ</a>
             </div>
         </div>
     </div>
